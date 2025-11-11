@@ -10,7 +10,7 @@
         }
 
         .navbar {
-            background-color: #b92b27;
+            background-color: #2777b9;
             padding: 0 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: fixed;
@@ -155,8 +155,8 @@
         }
 
         .add-btn {
-            background-color: #d73a36;
-            color: white;
+            background-color: hsl(0, 0%, 89%);
+            color: rgb(0, 0, 0);
             border: none;
             border-radius: 20px;
             padding: 10px 20px;
@@ -170,7 +170,7 @@
         }
 
         .add-btn:hover {
-            background-color: #c42f2b;
+            background-color: #2badc4;
         }
 
         /* Content area untuk demo */
