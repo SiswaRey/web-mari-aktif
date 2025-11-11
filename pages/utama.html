@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mari Aktif - Navigation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/public/utama.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="#" class="logo">Mari Aktif</a>
+                
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <i class="fas fa-home"></i>
+                            <span>Beranda</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-comments"></i>
+                            <span>Forum</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Lowongan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-trophy"></i>
+                            <span>Aktivitas</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-right">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Cari di Mari Aktif">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+
+                <div class="nav-icons">
+                    <button class="icon-btn">
+                        <i class="fas fa-globe"></i>
+                    </button>
+                    <button class="icon-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="profile-btn">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+
+                <button class="add-btn">
+                    <i class="fas fa-plus"></i>
+                    Tambah Pertanyaan
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div class="demo-card">
+            <h2>Selamat Datang di Mari Aktif</h2>
+            <p>Platform untuk berbagi informasi tentang lowongan kegiatan, forum diskusi, dan aktivitas mahasiswa/siswa.</p>
+            <p style="margin-top: 15px; color: #999; font-size: 14px;">Navigation bar di atas dibuat menyerupai Quora dengan menu: Forum, Lowongan, Aktivitas, dan Profil</p>
+        </div>
+    </div>
+
+    <script>
+        // Add active state on click
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Search functionality demo
+        document.querySelector('.search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                alert('Mencari: ' + this.value);
+            }
+        });
+
+        // Add question button
+        document.querySelector('.add-btn').addEventListener('click', function() {
+            alert('Fitur tambah pertanyaan akan dibuka');
+        });
+    </script>
+</body>
+</html>
