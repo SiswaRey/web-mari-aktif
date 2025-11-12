@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mari Aktif - Pertemanan</title>
+    <link rel="stylesheet" href="/public/pertemanan.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <komponen navbar></komponen>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-header">Teman</div>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-menu-item">
+                        <i class="fas fa-user-friends" style="color: #2777b9;"></i>
+                        <span>Beranda</span>
+                    </li>
+                    <li class="sidebar-menu-item active">
+                        <i class="fas fa-user-plus" style="color: #2777b9;"></i>
+                        <span>Permintaan Pertemanan</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <i class="fas fa-user-check" style="color: #666;"></i>
+                        <span>Saran</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <i class="fas fa-users" style="color: #666;"></i>
+                        <span>Semua Teman</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <div class="page-header">
+                <h1 class="page-title">Permintaan Pertemanan</h1>
+                <a href="#" class="view-all-link">Lihat Semua</a>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <h2 class="empty-state-title">Belum Ada Permintaan Pertemanan</h2>
+                <p class="empty-state-text">
+                    Saat seseorang mengirimkan permintaan pertemanan kepada Anda,<br>
+                    permintaan tersebut akan muncul di sini.
+                </p>
+                <button class="empty-state-btn" onclick="findFriends()">
+                    <i class="fas fa-search"></i> Temukan Teman
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="/public/topNavigasi.js"></script>
+</body>
+</html>

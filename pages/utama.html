@@ -8,38 +8,7 @@
     <link rel="stylesheet" href="/public/utama.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-left">
-                <a href="#" class="logo">Mari Aktif</a>
-                
-                <ul class="nav-menu">
-                    <li><a href="#" class="nav-link active"><i class="fas fa-home"></i><span>Beranda</span></a></li>
-                    <li><a href="#" class="nav-link"><i class="fas fa-comments"></i><span>Forum</span></a></li>
-                    <li><a href="#" class="nav-link"><i class="fas fa-bullhorn"></i><span>Lowongan</span></a></li>
-                    <li><a href="#" class="nav-link"><i class="fas fa-trophy"></i><span>Aktivitas</span></a></li>
-                </ul>
-            </div>
-
-            <div class="nav-right">
-                <div class="search-box">
-                    <input type="text" class="search-input" placeholder="Cari di Mari Aktif">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <button class="icon-btn"><i class="fas fa-bell"></i></button>
-                    <div class="profile-btn"><i class="fas fa-user"></i></div>
-                </div>
-
-                <button class="add-btn">
-                    <i class="fas fa-plus"></i>
-                    Tambah Pertanyaan
-                </button>
-            </div>
-        </div>
-    </nav>
+    <komponen navbar></komponen>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -218,41 +187,12 @@
                 <div class="nav-icons">
                     <button class="icon-btn">
                         <i class="fas fa-bell"></i>
-                    </button>
-                    <div class="profile-btn">
-                        <i class="fas fa-user"></i>
-                    </div>
-                </div>
 
-                <button class="add-btn">
-                    <i class="fas fa-plus"></i>
-                    Tambah Pertanyaan
                 </button>
             </div>
         </div>
     </nav>
 
-    <script>
-        // Add active state on click
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Search functionality demo
-        document.querySelector('.search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                alert('Mencari: ' + this.value);
-            }
-        });
-
-        // Add question button
-        document.querySelector('.add-btn').addEventListener('click', function() {
-            alert('Fitur tambah pertanyaan akan dibuka');
-        });
-    </script>
+    <script src="/public/topNavigasi.js"></script>
 </body>
 </html>
