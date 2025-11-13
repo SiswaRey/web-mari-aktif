@@ -93,6 +93,11 @@ app.get("/lowongan", (req, res) => {
     res.send(injectAuthScript(html));
 });
 
+app.get("/admin", (req, res) => {
+    const html = prosesHalaman('AdminHTML');
+    res.send(injectAuthScript(html));
+});
+
 // 404 handler
 app.use((req, res) => {
     res.status(404).send('Halaman tidak ditemukan');
