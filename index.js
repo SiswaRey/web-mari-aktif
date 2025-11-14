@@ -4,6 +4,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const route = require('./api.js');
 const friendshipRoute = require('./friendshipApi.js');
+const postRoute = require('./postApi.js');
 const connectDB = require('./database');
 const fs = require('fs');
 const path = require('path');
@@ -55,6 +56,7 @@ function injectAuthScript(html) {
 // API routes
 app.use("/api", route);
 app.use("/api/friendship", friendshipRoute);
+app.use("/api/post", postRoute);
 
 // Public files
 app.get('/public/:file', (req, res) => {
