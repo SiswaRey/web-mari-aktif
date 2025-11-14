@@ -499,6 +499,54 @@
             font-size: 18px;
         }
 
+        /* Post Stats */
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* Comments Section */
+        .post-comments-section {
+            display: none;
+            padding: 15px 20px;
+            background: #f9f9f9;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .post-comments-section.active {
+            display: block;
+        }
+
+        .comments-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .comment-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #2777b9;
+        }
+
         /* Modal */
         .modal {
             display: none;
