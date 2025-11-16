@@ -33,6 +33,35 @@ app.use(session({
     }
 }));
 
+// ============ NOTIFICATION CLEANUP SCHEDULER ============
+// Auto cleanup old notifications setiap jam
+const scheduleNotificationCleanup = () => {
+    // Jalankan cleanup setiap 1 jam (3600000 ms)
+    const cleanupInterval = setInterval(async () => {
+        try {
+            const User = require('./skema/user.js');
+            const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            
+            const result = await User.updateMany(
+                { 'notifications': { $elemMatch: { isRead: true, markedReadAt: { $lt: oneDayAgo } } } },
+                { $pull: { notifications: { isRead: true, markedReadAt: { $lt: oneDayAgo } } } }
+            );
+            
+            if (result.modifiedCount > 0) {
+                console.log(`[${new Date().toISOString()}] ✓ Notification cleanup: Removed old notifications from ${result.modifiedCount} users`);
+            }
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] ✗ Notification cleanup error:`, error.message);
+        }
+    }, 60 * 60 * 1000); // Setiap 1 jam
+    
+    console.log('✓ Notification cleanup scheduler started (runs every hour)');
+    return cleanupInterval;
+};
+
+// Start scheduler setelah server siap
+let cleanupScheduler;
+
 function prosesHalaman(file) {
     let data = fs.readFileSync(__dirname + '/pages/' + file + '.html', { encoding: 'utf8' });
     
@@ -134,4 +163,7 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
+    
+    // Start notification cleanup scheduler
+    cleanupScheduler = scheduleNotificationCleanup();
 });

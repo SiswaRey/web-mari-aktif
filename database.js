@@ -23,12 +23,12 @@ async function initializeDeveloperAccount() {
             const developer = new User({
                 username: 'developer',
                 nisn: '9999999999',
-                password: 'developer123', // Akan di-hash otomatis
+                password: 'Dev@2024!SecurePass', // Akan di-hash otomatis
                 role: 'developer'
             });
             
             await developer.save();
-            console.log('Developer account created: username=developer, password=developer123');
+            console.log('Developer account created: username=developer, password=Dev@2024!SecurePass');
         } else {
             console.log('Developer account already exists');
         }
@@ -36,5 +36,32 @@ async function initializeDeveloperAccount() {
         console.error('Error creating developer account:', error);
     }
 }
+
+// Function untuk reset developer account (untuk case jika developer account error)
+async function resetDeveloperAccount() {
+    try {
+        // Hapus akun developer lama
+        await User.deleteOne({ username: 'developer' });
+        console.log('Old developer account deleted');
+        
+        // Buat akun developer baru
+        const developer = new User({
+            username: 'developer',
+            nisn: '9999999999',
+            password: 'Dev@2024!SecurePass', // Akan di-hash otomatis
+            role: 'developer'
+        });
+        
+        await developer.save();
+        console.log('✓ Developer account reset successfully!');
+        console.log('Username: developer');
+        console.log('Password: Dev@2024!SecurePass');
+    } catch (error) {
+        console.error('Error resetting developer account:', error);
+    }
+}
+
+module.exports = connectDB;
+module.exports.resetDeveloperAccount = resetDeveloperAccount;
 
 module.exports = connectDB;

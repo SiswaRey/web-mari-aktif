@@ -34,6 +34,43 @@ const userSchema = new mongoose.Schema({
             type: Date,
             default: Date.now
         }
+    }],
+    notifications: [{
+        type: {
+            type: String,
+            enum: ['tag', 'comment', 'like'],
+            default: 'tag'
+        },
+        fromUser: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        fromUsername: {
+            type: String,
+            required: true
+        },
+        postId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post',
+            required: true
+        },
+        message: {
+            type: String,
+            required: true
+        },
+        isRead: {
+            type: Boolean,
+            default: false
+        },
+        markedReadAt: {
+            type: Date,
+            default: null
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
     }]
 }, {
     timestamps: true // Menambahkan createdAt dan updatedAt otomatis

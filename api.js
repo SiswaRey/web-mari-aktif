@@ -38,6 +38,52 @@ route.get("/", (req, res) => {
     res.send("API is working");
 });
 
+// ============ STATISTICS ROUTES (FOR DEVELOPER PANEL) ============
+
+// Ambil statistik total users (aktif dan total), competitions, dan posts
+route.get("/stats", verifyToken, async (req, res) => {
+    try {
+        // Import Post model
+        const Post = require('./skema/post.js');
+
+        // Hitung total users keseluruhan (tidak termasuk developer dan admin)
+        const totalUsersAll = await User.countDocuments({ role: 'user' });
+
+        // Hitung users aktif (yang login/update dalam 24 jam terakhir)
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const activeUsers = await User.countDocuments({ 
+            role: 'user',
+            updatedAt: { $gte: oneDayAgo } 
+        });
+
+        // Hitung total competitions (hanya yang approved)
+        const totalCompetitions = await Lowongan.countDocuments({ 
+            approvalStatus: 'approved' 
+        });
+
+        // Hitung total posts
+        const totalPosts = await Post.countDocuments({});
+
+        res.json({
+            success: true,
+            totalUsers: `${activeUsers}/${totalUsersAll}`, // Format: aktif/total
+            activeUsers: activeUsers,
+            totalUsersAll: totalUsersAll,
+            totalCompetitions,
+            totalPosts,
+            serverStatus: 'online'
+        });
+
+    } catch (error) {
+        console.error('Get stats error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Terjadi kesalahan server",
+            error: error.message
+        });
+    }
+});
+
 // Register user baru
 route.post("/register", async (req, res) => {
     try {
@@ -872,6 +918,273 @@ route.post("/lowongan/delete", verifyToken, async (req, res) => {
         res.status(500).json({ 
             success: false, 
             message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// ============ NOTIFICATION ROUTES ============
+
+// Ambil semua notifikasi user
+route.get("/notifications", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId)
+            .populate('notifications.fromUser', 'username')
+            .populate('notifications.postId', '_id content');
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User tidak ditemukan"
+            });
+        }
+
+        // Sort by createdAt descending (terbaru di atas)
+        const notifications = user.notifications.sort((a, b) => 
+            new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        res.json({
+            success: true,
+            notifications,
+            unreadCount: notifications.filter(n => !n.isRead).length
+        });
+
+    } catch (error) {
+        console.error('Get notifications error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Terjadi kesalahan server"
+        });
+    }
+});
+
+// Tandai notifikasi sebagai sudah dibaca
+route.post("/notifications/:notificationId/mark-read", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User tidak ditemukan"
+            });
+        }
+
+        // Cari dan tandai notifikasi
+        const notification = user.notifications.id(req.params.notificationId);
+
+        if (!notification) {
+            return res.status(404).json({
+                success: false,
+                message: "Notifikasi tidak ditemukan"
+            });
+        }
+
+        notification.isRead = true;
+        notification.markedReadAt = new Date();
+        await user.save();
+
+        res.json({
+            success: true,
+            message: "Notifikasi sudah ditandai dibaca"
+        });
+
+    } catch (error) {
+        console.error('Mark notification read error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Terjadi kesalahan server"
+        });
+    }
+});
+
+// Tandai semua notifikasi sebagai sudah dibaca
+route.post("/notifications/mark-all-read", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User tidak ditemukan"
+            });
+        }
+
+        // Tandai semua notifikasi sebagai sudah dibaca
+        user.notifications.forEach(notification => {
+            if (!notification.isRead) {
+                notification.isRead = true;
+                notification.markedReadAt = new Date();
+            }
+        });
+
+        await user.save();
+
+        res.json({
+            success: true,
+            message: "Semua notifikasi sudah ditandai dibaca"
+        });
+
+    } catch (error) {
+        console.error('Mark all notifications read error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Terjadi kesalahan server"
+        });
+    }
+});
+
+// Hapus notifikasi
+route.delete("/notifications/:notificationId", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User tidak ditemukan"
+            });
+        }
+
+        // Hapus notifikasi
+        user.notifications.id(req.params.notificationId).remove();
+        await user.save();
+
+        res.json({
+            success: true,
+            message: "Notifikasi berhasil dihapus"
+        });
+
+    } catch (error) {
+        console.error('Delete notification error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Terjadi kesalahan server"
+        });
+    }
+});
+
+// Hapus semua notifikasi
+route.delete("/notifications", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User tidak ditemukan"
+            });
+        }
+
+        // Hapus semua notifikasi
+        user.notifications = [];
+        await user.save();
+
+        res.json({
+            success: true,
+            message: "Semua notifikasi berhasil dihapus"
+        });
+
+    } catch (error) {
+        console.error('Delete all notifications error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Terjadi kesalahan server"
+        });
+    }
+});
+
+// ============ USERS ROUTES (FOR MENTION AUTOCOMPLETE) ============
+
+// Ambil daftar teman users (untuk mention autocomplete) - hanya user yang sudah menjadi teman
+route.get("/users/list", verifyToken, async (req, res) => {
+    try {
+        const Friendship = require('./skema/friendship.js');
+        
+        // Cari semua friendship yang accepted dengan user saat ini
+        const friendships = await Friendship.find({
+            $or: [
+                { requester: req.userId, status: 'accepted' },
+                { recipient: req.userId, status: 'accepted' }
+            ]
+        }).select('requester recipient');
+
+        // Extract user IDs yang menjadi teman
+        const friendUserIds = friendships.map(f => {
+            if (f.requester.toString() === req.userId) {
+                return f.recipient;
+            } else {
+                return f.requester;
+            }
+        });
+
+        // Ambil data user teman
+        const friends = await User.find({
+            _id: { $in: friendUserIds }
+        }).select('username').sort({ username: 1 });
+
+        const usernames = friends.map(u => u.username);
+
+        res.json({
+            success: true,
+            users: usernames,
+            total: usernames.length
+        });
+
+    } catch (error) {
+        console.error('Get friends list error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Terjadi kesalahan server"
+        });
+    }
+});
+
+// ============ NOTIFICATION AUTO-CLEANUP ============
+
+// Auto-cleanup notifications yang sudah dibaca 1 hari lalu
+route.post("/notifications/cleanup", async (req, res) => {
+    try {
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        
+        // Update semua users: hapus notifikasi yang sudah dibaca > 1 hari
+        // PENTING: HANYA hapus jika markedReadAt ada DAN lebih lama dari 24 jam
+        const result = await User.updateMany(
+            {
+                'notifications': {
+                    $elemMatch: {
+                        isRead: true,
+                        markedReadAt: { $ne: null, $lt: oneDayAgo }
+                    }
+                }
+            },
+            {
+                $pull: {
+                    notifications: {
+                        isRead: true,
+                        markedReadAt: { $ne: null, $lt: oneDayAgo }
+                    }
+                }
+            }
+        );
+
+        console.log(`🧹 Notification cleanup complete:`, {
+            modifiedCount: result.modifiedCount,
+            timestamp: new Date().toISOString(),
+            oneDayAgoLimit: oneDayAgo.toISOString()
+        });
+
+        res.json({
+            success: true,
+            message: "Notifications cleaned up",
+            modifiedUsers: result.modifiedCount
+        });
+
+    } catch (error) {
+        console.error('Notification cleanup error:', error);
+        res.status(500).json({
+            success: false,
+            message: "Terjadi kesalahan server"
         });
     }
 });

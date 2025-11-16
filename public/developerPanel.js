@@ -46,7 +46,8 @@ async function loadOverviewData() {
         
         if (statsResponse.ok) {
             const stats = await statsResponse.json();
-            document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+            // Tampilkan format aktif/total untuk users
+            document.getElementById('totalUsers').textContent = stats.totalUsers || '0/0';
             document.getElementById('totalComps').textContent = stats.totalCompetitions || 0;
             document.getElementById('totalPosts').textContent = stats.totalPosts || 0;
         }
