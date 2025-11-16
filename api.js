@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 const User = require("./skema/user.js");
 const Lowongan = require("./skema/lowongan.js");
 
@@ -672,6 +673,148 @@ route.put("/lowongan/:id/reject", verifyToken, async (req, res) => {
 
     } catch (error) {
         console.error('Reject lowongan error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Get saved competitions untuk user
+route.get("/user/saved-competitions", verifyToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).populate('savedCompetitions.competitionId');
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "User tidak ditemukan" 
+            });
+        }
+
+        const savedCompetitions = user.savedCompetitions.map(item => ({
+            id: item.competitionId._id,
+            title: item.competitionId.nama,
+            organizer: item.competitionId.penyelenggara,
+            category: item.competitionId.kategori,
+            savedAt: item.savedAt
+        }));
+
+        res.json({ 
+            success: true, 
+            savedCompetitions 
+        });
+
+    } catch (error) {
+        console.error('Get saved competitions error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Save competition untuk user
+route.post("/user/save-competition", verifyToken, async (req, res) => {
+    try {
+        const { competitionId } = req.body;
+
+        if (!competitionId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Competition ID harus diisi" 
+            });
+        }
+
+        // Validasi format ObjectId
+        if (!mongoose.Types.ObjectId.isValid(competitionId)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Format Competition ID tidak valid" 
+            });
+        }
+
+        const user = await User.findById(req.userId);
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "User tidak ditemukan" 
+            });
+        }
+
+        // Cek apakah sudah disimpan
+        const isAlreadySaved = user.savedCompetitions.some(
+            item => item.competitionId.toString() === competitionId
+        );
+
+        if (isAlreadySaved) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Kompetisi ini sudah disimpan" 
+            });
+        }
+
+        // Tambah ke saved competitions
+        user.savedCompetitions.push({ competitionId });
+        await user.save();
+
+        res.json({ 
+            success: true, 
+            message: "Kompetisi berhasil disimpan" 
+        });
+
+    } catch (error) {
+        console.error('Save competition error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Delete saved competition untuk user
+route.post("/user/unsave-competition", verifyToken, async (req, res) => {
+    try {
+        const { competitionId } = req.body;
+
+        if (!competitionId) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Competition ID harus diisi" 
+            });
+        }
+
+        // Validasi format ObjectId
+        if (!mongoose.Types.ObjectId.isValid(competitionId)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Format Competition ID tidak valid" 
+            });
+        }
+
+        const user = await User.findById(req.userId);
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "User tidak ditemukan" 
+            });
+        }
+
+        // Hapus dari saved competitions
+        user.savedCompetitions = user.savedCompetitions.filter(
+            item => item.competitionId.toString() !== competitionId
+        );
+        await user.save();
+
+        res.json({ 
+            success: true, 
+            message: "Kompetisi dihapus dari simpanan" 
+        });
+
+    } catch (error) {
+        console.error('Unsave competition error:', error);
         res.status(500).json({ 
             success: false, 
             message: "Terjadi kesalahan server" 

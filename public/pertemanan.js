@@ -457,6 +457,8 @@ async function removeFriend(userId, friendshipId) {
 
 // Switch tab
 function switchTab(tabName) {
+    console.log('Switching to tab:', tabName);
+    
     // Hide semua tab content
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
@@ -467,18 +469,48 @@ function switchTab(tabName) {
         btn.classList.remove('active');
     });
 
+    // Remove active class dari sidebar menu items
+    document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
     // Show tab yang dipilih
     const selectedTab = document.getElementById(`${tabName}-tab`);
     if (selectedTab) {
         selectedTab.classList.add('active');
+        console.log('Tab content activated:', `${tabName}-tab`);
     }
 
-    // Add active class ke button yang dipilih
-    event.target.classList.add('active');
+    // Add active class ke button yang tepat
+    const buttons = document.querySelectorAll('.tab-button');
+    buttons.forEach((btn, index) => {
+        if (btn.textContent.toLowerCase().includes('permintaan') && tabName === 'requests') {
+            btn.classList.add('active');
+        } else if (btn.textContent.toLowerCase().includes('temukan') && tabName === 'find-friends') {
+            btn.classList.add('active');
+        } else if (btn.textContent.toLowerCase().includes('semua') && tabName === 'friends') {
+            btn.classList.add('active');
+        }
+    });
+
+    // Add active class ke sidebar menu item yang tepat
+    const sidebarItems = document.querySelectorAll('.sidebar-menu-item');
+    sidebarItems.forEach((item) => {
+        if (item.textContent.toLowerCase().includes('permintaan') && tabName === 'requests') {
+            item.classList.add('active');
+        } else if (item.textContent.toLowerCase().includes('temukan') && tabName === 'find-friends') {
+            item.classList.add('active');
+        } else if (item.textContent.toLowerCase().includes('semua') && tabName === 'friends') {
+            item.classList.add('active');
+        }
+    });
 
     // Load data sesuai tab
     if (tabName === 'find-friends') {
-        document.getElementById('friendSearchInput').focus();
+        const searchInput = document.getElementById('friendSearchInput');
+        if (searchInput) {
+            searchInput.focus();
+        }
     } else if (tabName === 'requests') {
         loadIncomingRequests();
     } else if (tabName === 'friends') {

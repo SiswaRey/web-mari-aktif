@@ -250,6 +250,9 @@ body {
     padding-bottom: 100px;
     flex: 1;
     overflow-y: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .detail-title {
@@ -390,6 +393,9 @@ body {
     line-height: 1.6;
     margin-bottom: 12px;
     font-size: 14px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .about-section ul {

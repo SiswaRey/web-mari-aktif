@@ -19,7 +19,17 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Password harus diisi'],
         minlength: [6, 'Password minimal 6 karakter']
-    }
+    },
+    savedCompetitions: [{
+        competitionId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Lowongan'
+        },
+        savedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 }, {
     timestamps: true // Menambahkan createdAt dan updatedAt otomatis
 });

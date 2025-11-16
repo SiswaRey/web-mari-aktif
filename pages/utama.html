@@ -39,14 +39,9 @@
                 <div class="sidebar-section-title">
                     <i class="fas fa-bookmark"></i> Item yang disimpan
                 </div>
-                <a href="#" class="sidebar-link">
-                    <i class="fas fa-bookmark"></i>
-                    <span>Item yang disimpan</span>
-                </a>
-                <a href="#" class="sidebar-link">
-                    <i class="fas fa-users"></i>
-                    <span>Grup</span>
-                </a>
+                <div id="savedItemsList" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Saved items akan ditampilkan di sini -->
+                </div>
             </div>
         </aside>
 
@@ -151,5 +146,73 @@
     <script src="/public/protected-page.js"></script>
     <script src="/public/editName.js"></script>
     <script src="/public/postingSystem.js"></script>
+    
+    <script>
+        // Load saved competitions dari server (per user)
+        async function loadSavedItems() {
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                document.getElementById('savedItemsList').innerHTML = '<p style="color: #999; font-size: 13px; padding: 10px 0;">Silakan login untuk melihat item yang disimpan</p>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/user/saved-competitions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                const container = document.getElementById('savedItemsList');
+                
+                if (!data.success || !data.savedCompetitions || data.savedCompetitions.length === 0) {
+                    container.innerHTML = '<p style="color: #999; font-size: 13px; padding: 10px 0;">Belum ada item yang disimpan</p>';
+                    return;
+                }
+                
+                // Fetch competition details untuk logo dan warna
+                const response2 = await fetch('/api/lowongan');
+                const data2 = await response2.json();
+                const competitionsMap = {};
+                
+                if (data2.success && data2.lowongan) {
+                    data2.lowongan.forEach(comp => {
+                        competitionsMap[comp._id] = comp;
+                    });
+                }
+                
+                const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#84cc16', '#a855f7'];
+                const icons = ['🎓', '🔬', '📝', '🎨', '💻', '📐', '✍️', '🏆'];
+                
+                container.innerHTML = data.savedCompetitions.map((item, index) => {
+                    const comp = competitionsMap[item.id];
+                    const color = comp ? (colors[(Object.keys(competitionsMap).indexOf(item.id)) % colors.length]) : colors[index % colors.length];
+                    const icon = comp ? icons[(Object.keys(competitionsMap).indexOf(item.id)) % icons.length] : icons[index % icons.length];
+                    
+                    return `
+                        <a href="/lowongan?id=${item.id}" class="sidebar-link" title="${item.title}">
+                            <div style="width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; background: ${color};">
+                                ${icon}
+                            </div>
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.title}</span>
+                        </a>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading saved items:', error);
+                document.getElementById('savedItemsList').innerHTML = '<p style="color: #999; font-size: 13px; padding: 10px 0;">Error memuat item yang disimpan</p>';
+            }
+        }
+        
+        // Update saved items
+        function updateSavedItems() {
+            loadSavedItems();
+        }
+        
+        // Load saat halaman buka
+        document.addEventListener('DOMContentLoaded', loadSavedItems);
+    </script>
 </body>
 </html>

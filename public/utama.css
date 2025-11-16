@@ -467,6 +467,16 @@
             font-size: 14px;
             line-height: 1.5;
             color: #333;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .post-content p {
+            margin: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .post-actions-bar {
@@ -539,6 +549,9 @@
             padding: 8px;
             background: white;
             border-radius: 4px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .comment-input {
@@ -548,6 +561,9 @@
             border-radius: 4px;
             font-size: 13px;
             font-family: inherit;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .comment-input:focus {
