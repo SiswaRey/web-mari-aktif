@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Password harus diisi'],
         minlength: [6, 'Password minimal 6 karakter']
     },
+    role: {
+        type: String,
+        enum: ['user', 'developer', 'admin'],
+        default: 'user'
+    },
     savedCompetitions: [{
         competitionId: {
             type: mongoose.Schema.Types.ObjectId,

@@ -71,6 +71,20 @@ app.get('/public/:file', (req, res) => {
     }
 });
 
+// Pages files (untuk direct access ke halaman)
+app.get('/pages/:file', (req, res) => {
+    const file = req.params.file;
+    const filePath = path.join(__dirname, 'pages', file);
+    
+    // Cek apakah file ada
+    if (fs.existsSync(filePath)) {
+        const html = fs.readFileSync(filePath, { encoding: 'utf8' });
+        res.send(injectAuthScript(html));
+    } else {
+        res.status(404).send('Halaman tidak ditemukan');
+    }
+});
+
 // Halaman publik (tidak perlu login)
 app.get("/daftar", (req, res) => {
     res.sendFile(__dirname + "/pages/daftar.html");

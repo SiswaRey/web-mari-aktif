@@ -227,6 +227,8 @@ document.getElementById('logoutBtn').addEventListener('click', function() {
     if (confirm('Are you sure you want to logout?')) {
         localStorage.removeItem('authToken');
         localStorage.removeItem('currentUser');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userId');
         window.location.href = '/login';
     }
 });

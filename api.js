@@ -82,12 +82,13 @@ route.post("/register", async (req, res) => {
         
         await user.save();
         console.log("buat user baru");
-        // Generate JWT token
+        // Generate JWT token dengan role
         const token = jwt.sign(
             { 
                 userId: user._id, 
                 username: user.username,
-                nisn: user.nisn
+                nisn: user.nisn,
+                role: user.role
             }, 
             JWT_SECRET, 
             { expiresIn: '24h' }
@@ -100,7 +101,8 @@ route.post("/register", async (req, res) => {
             user: {
                 id: user._id,
                 username: user.username,
-                nisn: user.nisn
+                nisn: user.nisn,
+                role: user.role
             }
         });
 
@@ -148,12 +150,13 @@ route.post("/login", async (req, res) => {
             });
         }
 
-        // Generate JWT token
+        // Generate JWT token dengan role
         const token = jwt.sign(
             { 
                 userId: user._id, 
                 username: user.username,
-                nisn: user.nisn
+                nisn: user.nisn,
+                role: user.role
             }, 
             JWT_SECRET, 
             { expiresIn: '24h' }
@@ -166,7 +169,8 @@ route.post("/login", async (req, res) => {
             user: {
                 id: user._id,
                 username: user.username,
-                nisn: user.nisn
+                nisn: user.nisn,
+                role: user.role
             }
         });
 
@@ -206,7 +210,8 @@ route.get("/check-auth", verifyToken, async (req, res) => {
             user: {
                 id: user._id,
                 username: user.username,
-                nisn: user.nisn
+                nisn: user.nisn,
+                role: user.role
             }
         });
     } catch (error) {
@@ -815,6 +820,55 @@ route.post("/user/unsave-competition", verifyToken, async (req, res) => {
 
     } catch (error) {
         console.error('Unsave competition error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Terjadi kesalahan server" 
+        });
+    }
+});
+
+// Delete lowongan (hanya developer/admin yang bisa delete)
+route.post("/lowongan/delete", verifyToken, async (req, res) => {
+    try {
+        const { competitionId } = req.body;
+        const user = await User.findById(req.userId);
+
+        // Cek apakah user adalah developer atau admin
+        if (user.role !== 'developer' && user.role !== 'admin') {
+            return res.status(403).json({ 
+                success: false, 
+                message: "Anda tidak memiliki izin untuk menghapus kompetisi" 
+            });
+        }
+
+        // Validasi ObjectId
+        if (!mongoose.Types.ObjectId.isValid(competitionId)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Format Kompetisi ID tidak valid" 
+            });
+        }
+
+        // Cek lowongan ada atau tidak
+        const lowongan = await Lowongan.findById(competitionId);
+        
+        if (!lowongan) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Kompetisi tidak ditemukan" 
+            });
+        }
+
+        // Hapus lowongan
+        await Lowongan.findByIdAndDelete(competitionId);
+
+        res.json({ 
+            success: true, 
+            message: "Kompetisi berhasil dihapus" 
+        });
+
+    } catch (error) {
+        console.error('Delete lowongan error:', error);
         res.status(500).json({ 
             success: false, 
             message: "Terjadi kesalahan server" 
