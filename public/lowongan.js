@@ -4,6 +4,8 @@ let selectedCompId = null;
 let allCompetitions = [];
 let lastClickTime = 0;
 let lastClickedId = null;
+let lastSaveClickTime = 0;
+let lastSaveClickId = null;
 
 // Load data dari database saat halaman dimuat
 async function loadCompetitionsFromDatabase() {
@@ -190,8 +192,9 @@ function showDetail(id) {
     document.getElementById('detailRequirements').textContent = comp.requirements || 'Persyaratan tidak tersedia';
     
     // Update buttons dengan link yang benar
-    const applyButtons = document.querySelectorAll('.btn-primary');
-    const messageButtons = document.querySelectorAll('.btn-secondary');
+    const applyButtons = document.querySelectorAll('#applyBtn, #applyBtnBottom');
+    const saveButtons = document.querySelectorAll('#saveBtn');
+    const messageButtons = document.querySelectorAll('#messageBtnBottom');
     
     applyButtons.forEach(btn => {
         btn.onclick = () => {
@@ -201,17 +204,174 @@ function showDetail(id) {
     });
     
     messageButtons.forEach(btn => {
-        if (btn.textContent.includes('Pesan') || btn.textContent.includes('Simpan')) {
-            btn.onclick = () => {
-                window.open(comp.linkKontak, '_blank');
-            };
-            btn.textContent = '📞 Pesan';
+        btn.onclick = () => {
+            window.open(comp.linkKontak, '_blank');
+        };
+        btn.textContent = '📞 Pesan';
+    });
+    
+    saveButtons.forEach(btn => {
+        btn.onclick = saveCompetition;
+        
+        // Check if already saved from server
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            fetch('/api/user/saved-competitions', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.savedCompetitions) {
+                    const isAlreadySaved = data.savedCompetitions.some(item => item.id === selectedCompId);
+                    
+                    if (isAlreadySaved) {
+                        btn.classList.remove('btn-primary');
+                        btn.classList.add('btn-secondary');
+                        btn.textContent = '💾 Sudah Disimpan (klik untuk hapus)';
+                    } else {
+                        btn.classList.add('btn-primary');
+                        btn.classList.remove('btn-secondary');
+                        btn.textContent = '💾 Simpan';
+                    }
+                }
+            })
+            .catch(err => console.error('Error checking saved status:', err));
+        } else {
+            btn.classList.add('btn-primary');
+            btn.classList.remove('btn-secondary');
+            btn.textContent = '💾 Simpan';
         }
     });
 }
 
 // Load data saat halaman dimuat
 loadCompetitionsFromDatabase();
+
+// Test localStorage
+console.log('Testing localStorage...');
+try {
+    localStorage.setItem('test', 'value');
+    console.log('localStorage write: OK');
+    const testValue = localStorage.getItem('test');
+    console.log('localStorage read:', testValue);
+    localStorage.removeItem('test');
+} catch (e) {
+    console.error('localStorage error:', e);
+}
+
+// Simpan kompetisi ke server (per user)
+function saveCompetition() {
+    console.log('saveCompetition called, selectedCompId:', selectedCompId);
+    
+    if (!selectedCompId) {
+        alert('Pilih kompetisi terlebih dahulu');
+        return;
+    }
+    
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        alert('Silakan login terlebih dahulu');
+        return;
+    }
+    
+    const saveBtn = document.getElementById('saveBtn');
+    const isSaved = saveBtn && saveBtn.textContent.includes('Sudah Disimpan');
+    
+    // Jika sudah disimpan, delete saat di-click
+    if (isSaved) {
+        deleteCompetitionFromServer(selectedCompId, token);
+        return;
+    }
+    
+    // Jika belum disimpan, save saat di-click
+    checkAndSaveCompetition(selectedCompId, token);
+}
+
+// Cek dan save ke server
+async function checkAndSaveCompetition(competitionId, token) {
+    try {
+        const response = await fetch('/api/user/save-competition', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ competitionId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('✅ Kompetisi berhasil disimpan!');
+            
+            // Update button state
+            const saveBtn = document.getElementById('saveBtn');
+            if (saveBtn) {
+                saveBtn.classList.remove('btn-primary');
+                saveBtn.classList.add('btn-secondary');
+                saveBtn.textContent = '💾 Sudah Disimpan (klik untuk hapus)';
+            }
+            
+            // Update sidebar
+            updateSavedItemsInSidebar();
+        } else {
+            alert(data.message || 'Gagal menyimpan kompetisi');
+        }
+    } catch (error) {
+        console.error('Save competition error:', error);
+        alert('Terjadi kesalahan saat menyimpan kompetisi');
+    }
+}
+
+// Hapus dari server
+async function deleteCompetitionFromServer(competitionId, token) {
+    console.log('deleteCompetitionFromServer called with competitionId:', competitionId);
+    
+    try {
+        const response = await fetch('/api/user/unsave-competition', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ competitionId })
+        });
+
+        console.log('Delete response status:', response.status);
+        const data = await response.json();
+        console.log('Delete response data:', data);
+
+        if (data.success) {
+            alert('❌ Kompetisi dihapus dari simpanan');
+            
+            // Reset button
+            const saveBtn = document.getElementById('saveBtn');
+            if (saveBtn) {
+                saveBtn.classList.remove('btn-secondary');
+                saveBtn.classList.add('btn-primary');
+                saveBtn.textContent = '💾 Simpan';
+            }
+            
+            // Update sidebar
+            updateSavedItemsInSidebar();
+        } else {
+            alert(data.message || 'Gagal menghapus kompetisi');
+        }
+    } catch (error) {
+        console.error('Delete competition error:', error);
+        alert('Terjadi kesalahan saat menghapus kompetisi');
+    }
+}
+
+// Update saved items di sidebar halaman utama
+function updateSavedItemsInSidebar() {
+    // Ini akan dipanggil dari halaman utama
+    if (window.parent && window.parent !== window) {
+        window.parent.updateSavedItems();
+    }
+}
 
 // Update filter chips berdasarkan kategori yang tersedia
 document.addEventListener('DOMContentLoaded', function() {

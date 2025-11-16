@@ -320,7 +320,7 @@ function parseContentWithHashtags(content) {
     return result;
 }
 
-// Tampilkan detail kompetisi dalam modal
+// Tampilkan detail kompetisi - langsung redirect ke lowongan
 async function showCompetitionDetail(competitionName) {
     try {
         // Fetch semua approved competitions
@@ -343,78 +343,12 @@ async function showCompetitionDetail(competitionName) {
             return;
         }
         
-        // Buat modal HTML
-        const modalHTML = `
-            <div class="competition-modal-overlay" onclick="closeCompetitionModal()" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
-                <div class="competition-modal" onclick="event.stopPropagation()" style="background: white; border-radius: 8px; padding: 30px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
-                        <div>
-                            <h2 style="margin: 0; color: #333; font-size: 24px;">${comp.nama || 'Kompetisi'}</h2>
-                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Oleh: ${comp.penyelenggara || 'Penyelenggara'}</p>
-                        </div>
-                        <button onclick="closeCompetitionModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #999;">&times;</button>
-                    </div>
-                    
-                    <div style="border-top: 1px solid #eee; padding-top: 20px;">
-                        <div style="margin-bottom: 15px;">
-                            <h3 style="margin: 0 0 8px 0; color: #333; font-size: 14px; font-weight: 600;">KATEGORI</h3>
-                            <p style="margin: 0; color: #666;">${comp.kategori || '-'}</p>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <h3 style="margin: 0 0 8px 0; color: #333; font-size: 14px; font-weight: 600;">LOKASI</h3>
-                            <p style="margin: 0; color: #666;">${comp.lokasi || '-'}</p>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <h3 style="margin: 0 0 8px 0; color: #333; font-size: 14px; font-weight: 600;">BATAS PENDAFTARAN</h3>
-                            <p style="margin: 0; color: #666;">${comp.batasPendaftaran ? new Date(comp.batasPendaftaran).toLocaleDateString('id-ID') : '-'}</p>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <h3 style="margin: 0 0 8px 0; color: #333; font-size: 14px; font-weight: 600;">HADIAH</h3>
-                            <p style="margin: 0; color: #666;">${comp.hadiah || '-'}</p>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <h3 style="margin: 0 0 8px 0; color: #333; font-size: 14px; font-weight: 600;">DESKRIPSI</h3>
-                            <p style="margin: 0; color: #666; line-height: 1.5; white-space: pre-wrap;">${comp.deskripsi || '-'}</p>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <h3 style="margin: 0 0 8px 0; color: #333; font-size: 14px; font-weight: 600;">PERSYARATAN</h3>
-                            <p style="margin: 0; color: #666; line-height: 1.5; white-space: pre-wrap;">${comp.persyaratan || '-'}</p>
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
-                        <button onclick="window.location.href='/lowongan?id=${comp._id}'" style="flex: 1; background: #2777b9; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px;">Lihat di Lowongan</button>
-                        <button onclick="closeCompetitionModal()" style="flex: 1; background: #f0f0f0; color: #333; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px;">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Hapus modal yang sudah ada
-        const existingModal = document.querySelector('.competition-modal-overlay');
-        if (existingModal) existingModal.remove();
-        
-        // Tambah modal ke body
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-        document.body.style.overflow = 'hidden';
+        // Langsung redirect ke halaman lowongan dengan ID kompetisi
+        window.location.href = `/lowongan?id=${comp._id}`;
         
     } catch (error) {
         console.error('Error loading competition detail:', error);
         alert('Terjadi kesalahan saat memuat detail kompetisi');
-    }
-}
-
-// Tutup modal detail kompetisi
-function closeCompetitionModal() {
-    const modal = document.querySelector('.competition-modal-overlay');
-    if (modal) {
-        modal.remove();
-        document.body.style.overflow = 'auto';
     }
 }
 
