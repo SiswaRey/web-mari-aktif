@@ -89,20 +89,10 @@ async function performSearch(query, resultsContainer) {
 }
 
 function displaySearchResults(results, resultsContainer) {
-    const categories = ['Matematika', 'Fisika', 'Bahasa Indonesia', 'Desain', 'Teknologi', 'Seni', 'Olahraga', 'Lainnya'];
-    const categoryColors = {
-        'Matematika': '#3b82f6',
-        'Fisika': '#8b5cf6',
-        'Bahasa Indonesia': '#10b981',
-        'Desain': '#f59e0b',
-        'Teknologi': '#ef4444',
-        'Seni': '#06b6d4',
-        'Olahraga': '#84cc16',
-        'Lainnya': '#a855f7'
-    };
-
     resultsContainer.innerHTML = results.map(result => {
-        const color = categoryColors[result.kategori] || '#6b7280';
+        // Normalize kategori ke filter key
+        const filterKey = normalizeCategoryToFilter(result.kategori);
+        const config = getCategoryConfig(filterKey);
         const isExpired = new Date(result.tanggalExpired) < new Date();
         
         return `
@@ -118,7 +108,7 @@ function displaySearchResults(results, resultsContainer) {
                 <div style="
                     width: 40px;
                     height: 40px;
-                    background: ${color};
+                    background: ${config.color};
                     border-radius: 50%;
                     display: flex;
                     align-items: center;
@@ -127,7 +117,7 @@ function displaySearchResults(results, resultsContainer) {
                     font-size: 18px;
                     flex-shrink: 0;
                 ">
-                    🎯
+                    <i class="${config.icon}"></i>
                 </div>
                 <div style="flex: 1; min-width: 0;">
                     <div style="font-weight: 600; font-size: 14px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
