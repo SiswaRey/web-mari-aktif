@@ -36,13 +36,13 @@ const CATEGORY_CONFIG = {
         color: '#ec4899',
         shortCode: 'big'
     },
-    'ekonomi': {
+    'seni': {
         name: 'Seni',
         icon: 'fas fa-palette',
         color: '#ec4899',
         shortCode: 'sni'
     },
-    'geografi': {
+    'olahraga': {
         name: 'Olahraga',
         icon: 'fas fa-football-ball',
         color: '#f59e0b',
@@ -102,8 +102,8 @@ function normalizeCategoryToFilter(categoryName) {
         'biologi': 'biologi',
         'bahasa indonesia': 'bahasa-indonesia',
         'bahasa inggris': 'bahasa-inggris',
-        'seni': 'ekonomi', // Map "Seni" to "ekonomi" key
-        'olahraga': 'geografi', // Map "Olahraga" to "geografi" key
+        'seni': 'seni',
+        'olahraga': 'olahraga',
         'sejarah': 'sejarah',
         'informatika': 'informatika',
         'lainnya': 'lainnya',

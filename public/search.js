@@ -1,5 +1,7 @@
 // Search functionality untuk navbar
-let searchTimeout;
+if (typeof searchTimeout === 'undefined') {
+    var searchTimeout;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.querySelector('.search-input');
