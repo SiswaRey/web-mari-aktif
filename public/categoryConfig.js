@@ -1,6 +1,7 @@
 // Konfigurasi kategori dengan icon Font Awesome dan warna
-const CATEGORY_CONFIG = {
-    'matematika': {
+if (typeof CATEGORY_CONFIG === 'undefined') {
+    var CATEGORY_CONFIG = {
+        'matematika': {
         name: 'Matematika',
         icon: 'fas fa-calculator',
         color: '#3b82f6',
@@ -66,7 +67,8 @@ const CATEGORY_CONFIG = {
         color: '#6b7280',
         shortCode: 'lain'
     }
-};
+    };
+}
 
 /**
  * Get category config by filter name
