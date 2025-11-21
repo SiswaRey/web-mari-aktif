@@ -892,6 +892,62 @@
         font-size: 9px;
     }
     
+    /* LOWONGAN PAGE MOBILE OPTIMIZATION */
+    .left-panel {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    .right-panel {
+        max-height: 40vh;
+        position: relative;
+    }
+    
+    .detail-content {
+        padding: 12px;
+        padding-bottom: 60px;
+        font-size: 12px;
+    }
+    
+    .detail-title {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .detail-meta {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .about-section {
+        margin: 12px 0;
+    }
+    
+    .about-section h3 {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+    
+    .about-section p {
+        font-size: 11px;
+        line-height: 1.4;
+        margin-bottom: 6px;
+    }
+    
+    .action-buttons {
+        gap: 6px;
+        margin: 10px 0;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        font-size: 11px;
+        flex: 1;
+        min-width: 90px;
+        border-radius: 16px;
+    }
+    
     .post-menu-btn {
         font-size: 16px;
         padding: 4px;

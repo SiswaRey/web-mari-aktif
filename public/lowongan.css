@@ -569,6 +569,7 @@ body {
         min-height: auto;
         padding-top: 0 !important;
         padding-bottom: 20px !important;
+        height: auto;
     }
     
     .admin-btn {
@@ -588,15 +589,18 @@ body {
     
     .left-panel {
         width: 100%;
-        max-height: auto;
+        max-height: 55vh;
         border-right: none;
         border-bottom: 1px solid #ddd;
+        height: auto;
+        overflow: hidden;
     }
     
     .left-panel.shrink {
         width: 100%;
         display: block;
         border-bottom: 1px solid #ddd;
+        max-height: 55vh;
     }
     
     .header {
@@ -604,6 +608,7 @@ body {
         top: 0;
         z-index: 10;
         margin-top: 50px;
+        flex-shrink: 0;
     }
     
     .header h2 {
@@ -622,8 +627,9 @@ body {
     
     .filter-section {
         padding: 12px 16px;
-        top: 0;
+        top: 50px;
         z-index: 9;
+        flex-shrink: 0;
     }
     
     .filter-section h3 {
@@ -633,15 +639,22 @@ body {
     
     .filter-chips {
         gap: 6px;
+        max-height: 80px;
+        overflow-y: auto;
+        padding-bottom: 4px;
     }
     
     .filter-chip {
         padding: 5px 12px;
         font-size: 12px;
+        flex-shrink: 0;
     }
     
     .competition-list {
-        max-height: auto;
+        max-height: calc(55vh - 150px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1;
     }
     
     .competition-card {
@@ -668,12 +681,16 @@ body {
     
     .right-panel {
         width: 100%;
-        max-height: auto;
+        max-height: 45vh;
         border-top: 1px solid #ddd;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
     
     .right-panel.show {
         width: 100%;
+        max-height: 45vh;
     }
     
     .detail-header {
@@ -681,36 +698,42 @@ body {
         top: 0;
         position: sticky;
         z-index: 10;
-        margin-top: 50px;
+        margin-top: 0;
         flex-shrink: 0;
     }
     
     .detail-content {
-        padding: 16px;
-        padding-bottom: 80px;
+        padding: 12px 16px;
+        padding-bottom: 60px;
+        overflow-y: auto;
+        flex: 1;
+        -webkit-overflow-scrolling: touch;
     }
     
     .detail-title {
-        font-size: 20px;
-        margin-bottom: 12px;
+        font-size: 16px;
+        margin-bottom: 8px;
+        font-weight: 600;
     }
     
     .detail-meta {
         font-size: 12px;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
+        color: #666;
     }
     
     .action-buttons {
         gap: 8px;
-        margin: 16px 0;
+        margin: 12px 0;
         flex-wrap: wrap;
     }
     
     .btn {
-        padding: 10px 16px;
-        font-size: 13px;
+        padding: 8px 12px;
+        font-size: 12px;
         flex: 1;
-        min-width: 120px;
+        min-width: 110px;
+        border-radius: 18px;
     }
     
     .logo {
@@ -720,65 +743,67 @@ body {
     }
     
     .about-section {
-        margin: 16px 0;
+        margin: 12px 0;
     }
     
     .about-section h3 {
-        font-size: 16px;
-        margin-bottom: 12px;
+        font-size: 14px;
+        margin-bottom: 8px;
+        font-weight: 600;
     }
     
     .about-section p {
-        font-size: 13px;
+        font-size: 12px;
         line-height: 1.5;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     
     .recruiter-box {
         padding: 12px;
-        margin: 16px 0;
+        margin: 12px 0;
     }
     
     .recruiter-box h3 {
-        font-size: 14px;
-        margin-bottom: 12px;
+        font-size: 13px;
+        margin-bottom: 10px;
     }
     
     .recruiter-info {
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
     }
     
     .recruiter-avatar {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        height: 44px;
     }
     
     .recruiter-details h4 {
-        font-size: 14px;
+        font-size: 13px;
     }
     
     .recruiter-details p {
-        font-size: 12px;
+        font-size: 11px;
     }
     
     .premium-banner {
-        padding: 12px;
-        margin: 16px 0;
+        padding: 10px 12px;
+        margin: 12px 0;
     }
     
     .premium-banner h3 {
-        font-size: 14px;
+        font-size: 13px;
         margin-bottom: 6px;
     }
     
     .premium-banner p {
-        font-size: 12px;
-        margin-bottom: 8px;
+        font-size: 11px;
+        margin-bottom: 6px;
     }
     
     .icon-btn {
-        padding: 4px;
+        padding: 6px;
+        font-size: 16px;
     }
 }
 
