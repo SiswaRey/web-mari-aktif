@@ -370,7 +370,8 @@ async function createPost() {
     }
 
     // Validate mentions - hanya bisa mention teman
-    const mentionRegex = /@([^\s@]+(?:\s+[^\s@]+)*)/g;
+    // Regex: @ diikuti karakter non-whitespace sampai spasi atau newline (mention hanya 1 kata)
+    const mentionRegex = /@([^\s@]+)/g;
     let match;
     const mentionedUsernames = [];
     
@@ -467,7 +468,7 @@ function parseContentWithHashtags(content) {
     
     let htmlContent = escapeHtml(content);
     
-    // Parse manual untuk handle multi-word hashtags dan mentions
+    // Parse manual untuk handle hashtags dan mentions
     let result = '';
     let i = 0;
     
@@ -504,33 +505,21 @@ function parseContentWithHashtags(content) {
         // Tambah text sebelum symbol
         result += htmlContent.substring(i, nextSymbolIndex);
         
-        // Ambil text setelah symbol sampai double space atau end of string
+        // Ambil text setelah symbol sampai spasi atau newline
         let j = nextSymbolIndex + 1;
         let tagText = '';
-        let spaceCount = 0;
         
-        // Collect semua character sampai double space atau newline atau end
+        // Collect karakter sampai spasi, newline, atau special character
         while (j < htmlContent.length) {
             const char = htmlContent[j];
             
-            // Stop di newline
-            if (char === '\n' || char === '\r') {
+            // Stop di whitespace (spasi, newline)
+            if (char === ' ' || char === '\n' || char === '\r' || char === '\t') {
                 break;
             }
             
-            // Track consecutive spaces
-            if (char === ' ') {
-                spaceCount++;
-                if (spaceCount >= 2) {
-                    // Double space found, stop collecting
-                    break;
-                }
-            } else {
-                spaceCount = 0;
-            }
-            
-            // Stop jika ketemu karakter special yang bukan bagian tag
-            if (char === '<' || char === '>') {
+            // Stop jika ketemu karakter special
+            if (char === '<' || char === '>' || char === '@' || char === '#') {
                 break;
             }
             
