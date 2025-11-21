@@ -596,11 +596,17 @@ async function showCompetitionDetail(competitionName) {
             return;
         }
         
-        // Cari kompetisi yang cocok dengan nama (case-insensitive)
-        const comp = data.lowongan.find(c => 
-            c.nama.toLowerCase().includes(competitionName.toLowerCase()) ||
-            competitionName.toLowerCase().includes(c.nama.toLowerCase())
-        );
+        // Normalize hashtag untuk matching dengan nama kompetisi yang punya spasi
+        const hashtagNormalized = competitionName.toLowerCase().replace(/\s+/g, '');
+        
+        // Cari kompetisi yang cocok dengan nama (case-insensitive + support format tanpa spasi)
+        const comp = data.lowongan.find(c => {
+            const namaNormalized = c.nama.toLowerCase().replace(/\s+/g, '');
+            // Match either: exact match atau normalized match (untuk hashtag tanpa spasi)
+            return c.nama.toLowerCase().includes(competitionName.toLowerCase()) ||
+                   competitionName.toLowerCase().includes(c.nama.toLowerCase()) ||
+                   namaNormalized === hashtagNormalized;
+        });
         
         if (!comp) {
             alert(`Kompetisi "${competitionName}" tidak ditemukan`);
