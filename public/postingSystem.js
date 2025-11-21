@@ -370,13 +370,17 @@ async function createPost() {
     }
 
     // Validate mentions - hanya bisa mention teman
-    // Regex: @ diikuti karakter non-whitespace sampai spasi atau newline (mention hanya 1 kata)
-    const mentionRegex = /@([^\s@]+)/g;
+    // Regex: @ diikuti text sampai end of line atau sebelum kata yang diawali # atau @
+    // Support multi-word usernames: @rayhan nurindra
+    const mentionRegex = /@([^@#\n]+?)(?=\s+[#@]|\s*$|\n)/g;
     let match;
     const mentionedUsernames = [];
     
     while ((match = mentionRegex.exec(content)) !== null) {
-        mentionedUsernames.push(match[1]);
+        const username = match[1].trim();
+        if (username) {
+            mentionedUsernames.push(username);
+        }
     }
     
     // Check apakah semua mentioned users ada di validatedUsers (snapshot saat modal dibuka)
@@ -474,10 +478,15 @@ function parseContentWithHashtags(content) {
     
     let result = htmlContent;
     
-    // Parse mention (@username)
-    const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+    // Parse mention (@username atau @rayhan nurindra)
+    // Tangkap dari @ sampai sebelum \n atau sebelum [spasi][#@] atau end of string
+    const mentionRegex = /@([^@#\n]+?)(?=\s+[#@]|\s*$|\n)/g;
     result = result.replace(mentionRegex, (match, username) => {
-        return `<span style="color: #2777b9; font-weight: 600;">${match}</span>`;
+        const trimmedUsername = username.trim();
+        if (trimmedUsername) {
+            return `<span style="color: #2777b9; font-weight: 600;">@${trimmedUsername}</span>`;
+        }
+        return match;
     });
     
     // Parse hashtag (#taglomba)
