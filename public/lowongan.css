@@ -597,10 +597,12 @@ body {
     }
     
     .left-panel.shrink {
-        display: none;
-        width: 100%;
-        border-bottom: 1px solid #ddd;
-        max-height: 55vh;
+        width: 40%;
+        display: block;
+        border-right: 1px solid #ddd;
+        border-bottom: none;
+        max-height: auto;
+        height: auto;
     }
     
     .header {
@@ -689,18 +691,20 @@ body {
     }
     
     .right-panel.show {
-        width: 100%;
+        width: 60%;
         max-height: 100vh;
-        height: 100vh;
+        height: auto;
         display: flex;
         flex-direction: column;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 1001;
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        z-index: auto;
         background: white;
+        border-top: none;
+        border-left: 1px solid #ddd;
     }
     
     .detail-header {
@@ -716,7 +720,7 @@ body {
     }
     
     #closeDetailBtn {
-        display: block !important;
+        display: none !important;
         font-size: 24px;
         color: #333;
         padding: 8px;
