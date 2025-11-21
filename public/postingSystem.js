@@ -211,6 +211,9 @@ function selectMentionSuggestion(username) {
     
     if (lastMentionIndex === -1) return;
     
+    // Format username untuk mention: hapus spasi (seperti hashtag)
+    const mentionFormat = username.replace(/\s+/g, '');
+    
     const beforeMention = text.substring(0, lastMentionIndex);
     const afterMention = text.substring(lastMentionIndex + 1);
     const afterSpaceIndex = afterMention.indexOf(' ');
@@ -225,13 +228,13 @@ function selectMentionSuggestion(username) {
     }
     
     const afterCompletion = afterMention.substring(insertPoint);
-    const newText = beforeMention + '@' + username + ' ' + afterCompletion;
+    const newText = beforeMention + '@' + mentionFormat + ' ' + afterCompletion;
     
     textarea.value = newText;
     textarea.focus();
     
     // Set cursor position after inserted text
-    const newCursorPos = beforeMention.length + username.length + 2;
+    const newCursorPos = beforeMention.length + mentionFormat.length + 2;
     textarea.setSelectionRange(newCursorPos, newCursorPos);
     
     hideMentionSuggestions();
@@ -414,11 +417,16 @@ async function createPost() {
     }
     
     // Check apakah semua mentioned users ada di validatedUsers (snapshot saat modal dibuka)
-    // Case insensitive comparison
-    const validatedUsersLowercase = validatedUsers.map(u => u.toLowerCase());
-    const invalidMentions = mentionedUsernames.filter(username => 
-        !validatedUsersLowercase.includes(username.toLowerCase())
-    );
+    // Case insensitive comparison + remove spaces untuk match (karena mention format tanpa spasi)
+    const validatedUsersLowercase = validatedUsers.map(u => ({
+        original: u,
+        normalized: u.toLowerCase().replace(/\s+/g, '') // Remove spaces untuk matching
+    }));
+    
+    const invalidMentions = mentionedUsernames.filter(username => {
+        const normalizedMention = username.toLowerCase().replace(/\s+/g, '');
+        return !validatedUsersLowercase.some(u => u.normalized === normalizedMention);
+    });
     
     if (invalidMentions.length > 0) {
         alert(`❌ Anda hanya bisa mention teman yang sudah ditambahkan.\n\nUser tidak valid: @${invalidMentions.join(', @')}\n\nTambahkan mereka sebagai teman terlebih dahulu.`);
