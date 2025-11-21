@@ -115,10 +115,10 @@ body {
     border-right: 1px solid #ddd;
     overflow: hidden;
     transition: width 0.3s ease;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-height: calc(100vh - 70px);
 }
 
 .left-panel.shrink {
@@ -130,6 +130,7 @@ body {
     border-bottom: 1px solid #ddd;
     background: white;
     margin-top: 70px;
+    flex-shrink: 0;
 }
 
 .header h2 {
@@ -513,6 +514,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 9;
+    flex-shrink: 0;
 }
 
 .filter-section h3 {
