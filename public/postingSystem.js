@@ -527,35 +527,18 @@ function parseContentWithHashtags(content) {
             // Add text sebelum @
             result += htmlContent.substring(lastIndex, i);
             
-            // Find mention end - sampai space, newline, atau next @ atau #
+            // Find mention end - sampai newline atau next @ atau #
             let j = i + 1;
-            while (j < htmlContent.length && htmlContent[j] !== '\n' && htmlContent[j] !== '\r' && htmlContent[j] !== ' ') {
+            while (j < htmlContent.length && htmlContent[j] !== '\n' && htmlContent[j] !== '\r') {
+                // Stop jika ketemu @ atau # (next mention atau hashtag)
+                if (htmlContent[j] === '@' || htmlContent[j] === '#') {
+                    break;
+                }
                 j++;
             }
             
-            // Get the full mention including spaces after (for multi-word)
-            let mentionEnd = j;
-            let spaceCount = 0;
-            while (mentionEnd < htmlContent.length && htmlContent[mentionEnd] === ' ') {
-                spaceCount++;
-                mentionEnd++;
-                if (spaceCount > 1 || htmlContent[mentionEnd] === '@' || htmlContent[mentionEnd] === '#') {
-                    mentionEnd--;
-                    break;
-                }
-            }
-            
-            // Collect mention text
-            let mentionText = htmlContent.substring(i + 1, mentionEnd).trim();
-            
-            // Stop at @ atau # jika ada
-            const stopAt = Math.min(
-                mentionText.indexOf('@') !== -1 ? mentionText.indexOf('@') : Infinity,
-                mentionText.indexOf('#') !== -1 ? mentionText.indexOf('#') : Infinity
-            );
-            if (stopAt !== Infinity) {
-                mentionText = mentionText.substring(0, stopAt).trim();
-            }
+            // Collect mention text (termasuk spasi untuk multi-word)
+            let mentionText = htmlContent.substring(i + 1, j).trim();
             
             if (mentionText) {
                 result += `<span style="color: #2777b9; font-weight: 600;">@${mentionText}</span>`;
