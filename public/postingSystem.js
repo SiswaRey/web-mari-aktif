@@ -122,17 +122,22 @@ function setupHashtagAutocomplete() {
 
 // Handle mention autocomplete
 function handleMentionAutocomplete(text, mentionIndex) {
-    // Cek apakah ada spasi atau newline setelah @ (jika ada, close suggestions)
+    // Dapatkan text dari @ sampai newline atau sampai next @ atau #
     const afterMention = text.substring(mentionIndex + 1);
-    if (afterMention.includes(' ') || afterMention.includes('\n')) {
-        hideMentionSuggestions();
-        return;
+    
+    let endIndex = 0;
+    while (endIndex < afterMention.length) {
+        const char = afterMention[endIndex];
+        // Stop di newline, @, atau #
+        if (char === '\n' || char === '\r' || char === '@' || char === '#') {
+            break;
+        }
+        endIndex++;
     }
     
-    // Dapatkan text setelah @
-    const searchText = afterMention.toLowerCase();
+    const mentionText = afterMention.substring(0, endIndex).trim();
     
-    if (searchText.length === 0) {
+    if (mentionText.length === 0) {
         // Show all users saat @ pertama kali ditekan
         console.log('@ pressed - showing all users:', allUsers);
         if (allUsers.length > 0) {
@@ -144,18 +149,19 @@ function handleMentionAutocomplete(text, mentionIndex) {
         return;
     }
     
-    // Filter users berdasarkan search text
+    // Filter users berdasarkan search text - match dari awal username
+    const searchTextLower = mentionText.toLowerCase();
     const suggestions = allUsers.filter(username => 
-        username.toLowerCase().includes(searchText)
+        username.toLowerCase().startsWith(searchTextLower)
     ).slice(0, 5); // Limit 5 suggestions
     
-    console.log(`📝 Searching for: "@${searchText}" - Found:`, suggestions);
+    console.log(`📝 Searching for: "@${mentionText}" - Found:`, suggestions);
     
     if (suggestions.length > 0) {
         showMentionSuggestions(suggestions, mentionIndex);
         hideHashtagSuggestions();
     } else {
-        console.log(`ℹ️ No users found matching "@${searchText}"`);
+        console.log(`ℹ️ No users found matching "@${mentionText}"`);
         hideMentionSuggestions();
         hideHashtagSuggestions();
     }
