@@ -8,6 +8,7 @@ function getToken() {
 // Store kompetisi dan users untuk autocomplete
 let allCompetitions = [];
 let allUsers = [];
+let validatedUsers = []; // Store users yang divalidasi saat akan membuat posting
 
 // Load semua users untuk mention autocomplete
 async function loadUsersForMention() {
@@ -329,7 +330,12 @@ function openPostModal() {
     }
     
     // Always reload users untuk memastikan data terbaru
-    loadUsersForMention();
+    // dan simpan snapshot untuk validasi saat submit
+    loadUsersForMention().then(() => {
+        // Buat snapshot users untuk validasi konsisten saat posting dibuat
+        validatedUsers = [...allUsers];
+        console.log('✓ Snapshot users for validation created:', validatedUsers);
+    });
     
     setTimeout(() => {
         setupHashtagAutocomplete();
@@ -372,10 +378,11 @@ async function createPost() {
         mentionedUsernames.push(match[1]);
     }
     
-    // Check apakah semua mentioned users ada di allUsers (teman) - case insensitive
-    const allUsersLowercase = allUsers.map(u => u.toLowerCase());
+    // Check apakah semua mentioned users ada di validatedUsers (snapshot saat modal dibuka)
+    // Case insensitive comparison
+    const validatedUsersLowercase = validatedUsers.map(u => u.toLowerCase());
     const invalidMentions = mentionedUsernames.filter(username => 
-        !allUsersLowercase.includes(username.toLowerCase())
+        !validatedUsersLowercase.includes(username.toLowerCase())
     );
     
     if (invalidMentions.length > 0) {
@@ -386,6 +393,7 @@ async function createPost() {
     try {
         console.log('📤 Creating post with content:', content);
         console.log('✓ All mentions are valid friends:', mentionedUsernames);
+        console.log('✓ Using validated users snapshot:', validatedUsers);
         
         const response = await fetch('/api/post/create', {
             method: 'POST',
